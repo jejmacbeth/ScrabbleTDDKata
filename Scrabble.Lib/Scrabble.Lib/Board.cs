@@ -20,7 +20,7 @@ namespace Scrabble.Lib
             return new Board(InitialBoardValidator.Instance);
         }
 
-        internal static Board Create(BoardValidator validator)
+        public static Board Create(BoardValidator validator)
         {
             return new Board(validator);
         }
