@@ -1,0 +1,35 @@
+name: Update NuGet Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_names:
+        description: "Comma-separated list of NuGet package names to update"
+        required: true
+        type: string
+        default: "NewVoiceMedia.Stats.InsightsStream.Messages, NewVoiceMedia.Messaging.Models"
+
+jobs:
+  update-packages:
+    name: Update NuGet Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8\n9"
+
+      - name: Install dotnet-outdated tool
+        run: dotnet tool install --global dotnet-outdated-tool
+
+      - name: Update NuGet packages
+        run: |
+          IFS=',' read -ra PACKAGES <<< "${{ github.event.inputs.package_names }}"
+          for package in "${PACKAGES[@]}"; do
+            package=$(echo "$package" | xargs)  # Trim whitespace
+            echo "Updating package: $package"
+            dotnet outdated --upgrade --include "$package"
+          done
